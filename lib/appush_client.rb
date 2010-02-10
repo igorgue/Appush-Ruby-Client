@@ -56,7 +56,7 @@ class RootUser < AppushClient
     url = "#{@service_url}/application"
     data = {:name=>name, :env=>env, :dev_pem=>dev_pem, :prod_pem=>prod_pem}.to_json
 
-    RestClient.post url, data, :content_type=>"application/json", :accept=>"application/json"
+    get_hash RestClient.post url, data, :content_type=>"application/json", :accept=>"application/json"
   end
 
   # PUT
@@ -71,28 +71,28 @@ class RootUser < AppushClient
     data[:prod_pem] = params[:prod_pem] if params[:prod_pem]
 
     data = data.to_json
-    RestClient.put url, data, :content_type=>"application/json", :accept=>"application/json"
+    get_hash RestClient.put url, data, :content_type=>"application/json", :accept=>"application/json"
   end
 
   # GET
   def list_applications()
     url = "#{@service_url}/application"
 
-    RestClient.get url, :content_type=>"application/json", :accept=>"application/json"
+    get_hash RestClient.get url, :content_type=>"application/json", :accept=>"application/json"
   end
 
   # GET <id>
   def get_application(id)
     url = "#{@service_url}/application/#{id}"
 
-    RestClient.get url, :content_type=>"application/json", :accept=>"application/json"
+    get_hash RestClient.get url, :content_type=>"application/json", :accept=>"application/json"
   end
 
   # DELETE <id>
   def delete_application(id)
     url = "#{@service_url}/application/#{id}"
 
-    RestClient.delete url, :content_type=>"application/json", :accept=>"application/json"
+    get_hash RestClient.delete url, :content_type=>"application/json", :accept=>"application/json"
   end
 
   # POST <id> send notification
@@ -107,21 +107,21 @@ class RootUser < AppushClient
             "devices"=>params[:devices],
             "exclude"=>params[:exclude]}.merge payload
 
-    RestClient.post url, data, :content_type=>"application/json", :accept=>"application/json"
+    get_hash RestClient.post url, data, :content_type=>"application/json", :accept=>"application/json"
   end
 
   # GET get notification status
   def get_notification_status(app_id, notification_id)
     url = "#{@service_url}/application/#{app_id}/notification/#{notification_id}"
     
-    RestClient.get url, :content_type=>"application/json", :accept=>"application/json"
+    get_hash RestClient.get url, :content_type=>"application/json", :accept=>"application/json"
   end
 
   # GET all the devices with a tag
   def get_devices_by_tag(app_id, tag)
     url = "#{@service_url}/application/#{app_id}/tag/#{tag}"
 
-    RestClient.get url, :content_type=>"application/json", :accept=>"application/json"
+    get_hash RestClient.get url, :content_type=>"application/json", :accept=>"application/json"
   end
 end
 
@@ -130,7 +130,7 @@ class Profile < AppushClient
   def get_device(device_token)
     url = "#{@service_url}/device/#{device_token}"
 
-    RestClient.get url, :content_type=>"application/json", :accept=>"application/json"
+    get_hash RestClient.get url, :content_type=>"application/json", :accept=>"application/json"
   end
 
   # PUT register a device with tags
@@ -138,14 +138,14 @@ class Profile < AppushClient
     url = "#{@service_url}/device/#{device_token}"
     data = {:tags=>tags}.to_json
 
-    RestClient.get url, data, :content_type=>"application/json", :accept=>"application/json"
+    get_hash RestClient.get url, data, :content_type=>"application/json", :accept=>"application/json"
   end
 
   # DELETE unregister device
   def unregister_device(device_token)
     url = "#{@service_url}/device/#{device_token}"
 
-    RestClient.delete url, :content_type=>"application/json", :accept=>"application/json"
+    get_hash RestClient.delete url, :content_type=>"application/json", :accept=>"application/json"
   end
 end
 
@@ -154,6 +154,6 @@ class Application < AppushClient
   def create_profile()
     url = "#{@service_url}/profile"
     
-    RestClient.post url, :content_type=>"application/json", :accept=>"application/json"
+    get_hash RestClient.post url, :content_type=>"application/json", :accept=>"application/json"
   end
 end
