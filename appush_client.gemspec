@@ -2,10 +2,10 @@
 
 Gem::Specification.new do |s|
   s.name = 'appush_client'
-  s.version = '0.1'
+  s.version = '0.2'
 
   s.authors = ['Igor Guerrero']
-  s.date = '2009-12-10'
+  s.date = '2010-01-09'
   s.description = "Ruby client library for Appush PUSH service."
   s.email = ['igor@appush.com']
   s.homepage = 'http://appush.com'
