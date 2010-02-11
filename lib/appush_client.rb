@@ -21,11 +21,7 @@ class AppushClient
   end
 
   def to_s
-    if push_secret.empty?
-      return "Appush Client = #{@user}:#{@password}, Server = #{@service_url}"
-    end
-
-    "Appush Client = #{@user}:#{@password}, Server = #{@service_url}"
+    "Server = #{@service_url}"
   end
 
   private
@@ -37,17 +33,6 @@ class AppushClient
 
     service_url
   end
-
-  def get_hash(response)
-    if response.nil?
-      return {"status"=>204}
-    end
-     
-    data = JSON.parse response
-    data["status"] = response.code
-         
-    return data
-  end
 end
 
 class RootUser < AppushClient
@@ -56,7 +41,7 @@ class RootUser < AppushClient
     url = "#{@service_url}/application"
     data = {:name=>name, :env=>env, :dev_pem=>dev_pem, :prod_pem=>prod_pem}.to_json
 
-    get_hash RestClient.post url, data, :content_type=>"application/json", :accept=>"application/json"
+    RestClient.post url, data, :content_type=>:json, :accept=>:json
   end
 
   # PUT
@@ -71,28 +56,28 @@ class RootUser < AppushClient
     data[:prod_pem] = params[:prod_pem] if params[:prod_pem]
 
     data = data.to_json
-    get_hash RestClient.put url, data, :content_type=>"application/json", :accept=>"application/json"
+    RestClient.put url, data, :content_type=>:json, :accept=>:json
   end
 
   # GET
   def list_applications()
     url = "#{@service_url}/application"
 
-    get_hash RestClient.get url, :content_type=>"application/json", :accept=>"application/json"
+    RestClient.get url, :content_type=>:json, :accept=>:json
   end
 
   # GET <id>
   def get_application(id)
     url = "#{@service_url}/application/#{id}"
 
-    get_hash RestClient.get url, :content_type=>"application/json", :accept=>"application/json"
+    RestClient.get url, :content_type=>:json, :accept=>:json
   end
 
   # DELETE <id>
   def delete_application(id)
     url = "#{@service_url}/application/#{id}"
 
-    get_hash RestClient.delete url, :content_type=>"application/json", :accept=>"application/json"
+    RestClient.delete url, :content_type=>:json, :accept=>:json
   end
 
   # POST <id> send notification
@@ -106,22 +91,23 @@ class RootUser < AppushClient
     data = {"tags"=>params[:tags],
             "devices"=>params[:devices],
             "exclude"=>params[:exclude]}.merge payload
+    data = data.to_json
 
-    get_hash RestClient.post url, data, :content_type=>"application/json", :accept=>"application/json"
+    RestClient.post url, data, :content_type=>:json, :accept=>:json
   end
 
   # GET get notification status
   def get_notification_status(app_id, notification_id)
     url = "#{@service_url}/application/#{app_id}/notification/#{notification_id}"
     
-    get_hash RestClient.get url, :content_type=>"application/json", :accept=>"application/json"
+    RestClient.get url, :content_type=>:json, :accept=>:json
   end
 
   # GET all the devices with a tag
   def get_devices_by_tag(app_id, tag)
     url = "#{@service_url}/application/#{app_id}/tag/#{tag}"
 
-    get_hash RestClient.get url, :content_type=>"application/json", :accept=>"application/json"
+    RestClient.get url, :content_type=>:json, :accept=>:json
   end
 end
 
@@ -130,7 +116,7 @@ class Profile < AppushClient
   def get_device(device_token)
     url = "#{@service_url}/device/#{device_token}"
 
-    get_hash RestClient.get url, :content_type=>"application/json", :accept=>"application/json"
+    RestClient.get url, :content_type=>:json, :accept=>:json
   end
 
   # PUT register a device with tags
@@ -138,14 +124,14 @@ class Profile < AppushClient
     url = "#{@service_url}/device/#{device_token}"
     data = {:tags=>tags}.to_json
 
-    get_hash RestClient.get url, data, :content_type=>"application/json", :accept=>"application/json"
+    RestClient.get url, data, :content_type=>:json, :accept=>:json
   end
 
   # DELETE unregister device
   def unregister_device(device_token)
     url = "#{@service_url}/device/#{device_token}"
 
-    get_hash RestClient.delete url, :content_type=>"application/json", :accept=>"application/json"
+    RestClient.delete url, :content_type=>:json, :accept=>:json
   end
 end
 
@@ -154,6 +140,6 @@ class Application < AppushClient
   def create_profile()
     url = "#{@service_url}/profile"
     
-    get_hash RestClient.post url, :content_type=>"application/json", :accept=>"application/json"
+    RestClient.post url, :content_type=>:json, :accept=>:json
   end
 end
