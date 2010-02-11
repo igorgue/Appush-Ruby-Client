@@ -120,11 +120,16 @@ class Profile < AppushClient
   end
 
   # PUT register a device with tags
-  def register_device(tags=[])
+  def register_device(device_token, tags=[])
     url = "#{@service_url}/device/#{device_token}"
+
+    if tags.empty?
+      return RestClient.put url, :content_type=>:json, :accept=>:json
+    end
+
     data = {:tags=>tags}.to_json
 
-    RestClient.get url, data, :content_type=>:json, :accept=>:json
+    RestClient.put url, data, :content_type=>:json, :accept=>:json
   end
 
   # DELETE unregister device
