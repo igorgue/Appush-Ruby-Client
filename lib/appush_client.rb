@@ -145,6 +145,6 @@ class Application < AppushClient
   def create_profile()
     url = "#{@service_url}/profile"
     
-    RestClient.post url, :content_type=>:json, :accept=>:json
+    RestClient.post url, "".to_json, :content_type=>:json, :accept=>:json
   end
 end
