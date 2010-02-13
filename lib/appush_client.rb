@@ -37,7 +37,7 @@ end
 
 class RootUser < AppushClient
   # POST
-  def create_application(name, env, dev_pem, prod_pem)
+  def create_application(name, env="dev", dev_pem="", prod_pem="")
     url = "#{@service_url}/application"
     data = {:name=>name, :env=>env, :dev_pem=>dev_pem, :prod_pem=>prod_pem}.to_json
 
@@ -83,9 +83,8 @@ class RootUser < AppushClient
   # PUT application/<id>/icon
   def save_application_icon(app_id, icon)
     url = "#{@service_url}/application/#{app_id}/icon"
-    data = File.read(icon)
 
-    RestClient.put url, data, :content_type=>"image/png"
+    RestClient.put url, icon, :content_type=>"image/png"
   end
 
   # DELETE <id>
