@@ -73,11 +73,19 @@ class RootUser < AppushClient
     RestClient.get url, :content_type=>:json, :accept=>:json
   end
 
-  # GET <id>/icon
+  # GET application/<id>/icon
   def get_application_icon(id)
     url = "#{@service_url}/application/#{id}/icon"
 
     RestClient.get url, :content_type=>:json, :accept=>:json
+  end
+
+  # PUT application/<id>/icon
+  def save_application_icon(app_id, icon)
+    url = "#{@service_url}/application/#{app_id}/icon"
+    data = File.read(icon)
+
+    RestClient.put url, data, :content_type=>"image/png"
   end
 
   # DELETE <id>
