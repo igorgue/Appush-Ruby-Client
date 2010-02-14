@@ -6,7 +6,8 @@ require 'rest_client'
 class AppushClient
   attr_accessor :user, :password, :protocol, :service_url
 
-  def initialize(user, password, params={:service_url=>"https://appush.com/api"})
+  def initialize(user, password, params={})
+    params = {:service_url=>"https://appush.com/api"}.merge params
     @user = user
     @password = password
 
@@ -95,8 +96,9 @@ class RootUser < AppushClient
   end
 
   # POST <id> send notification
-  def send_notification(app_id, params={:tags=>[], :devices=>[], :exclude=>[], :alert=>"", :sound=>"", :badge=>0, :kv=>{}})
+  def send_notification(app_id, params={})
     url = "#{@service_url}/application/#{app_id}/notification"
+    params = {:tags=>[], :devices=>[], :exclude=>[], :alert=>"", :sound=>"", :badge=>0, :kv=>[]}.merge params
 
     payload = {"aps"=>{"alert"=>params[:alert],
                        "sound"=>params[:sound],
