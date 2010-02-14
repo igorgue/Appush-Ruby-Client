@@ -78,7 +78,7 @@ class RootUser < AppushClient
   def get_application_icon(id)
     url = "#{@service_url}/application/#{id}/icon"
 
-    RestClient.get url, :content_type=>:json, :accept=>:json
+    RestClient.get url, :content_type=>"image/png", :accept=>"image/png"
   end
 
   # PUT application/<id>/icon
