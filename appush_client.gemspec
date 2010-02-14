@@ -13,5 +13,5 @@ Gem::Specification.new do |s|
     'spec/appush_client_spec.rb']
   s.summary = "Ruby client library for Appush PUSH service."
 
-  s.add_dependency 'rest-client', '>= 1.0'
+  s.add_dependency 'rest-client', '>= 1.3.1'
 end
