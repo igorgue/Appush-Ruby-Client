@@ -3,6 +3,8 @@
 require 'appush_client'
 require 'webmock/rspec'
 
+require 'json'
+
 include WebMock
 
 describe "Using Appush client API" do
@@ -43,76 +45,148 @@ describe "Using Appush client API" do
     WebMock.should have_requested(:post, "https://#{@root_key}:#{@root_secret}@appush.com/api/application").once
   end
 
-  #it "should modify an application" do
-    #result_code = 204
+  it "should modify an application" do
+    result = ""
+    id = "test"
 
-    #stub_request(:put, "https://#{@root_key}:#{
-  #end
-  
-  #it "should get device information" do
-    #result = {"tags"=>["foo", "waa"], "status"=> 200}
+    stub_request(:put, "https://#{@root_key}:#{@root_secret}@appush.com/api/application/#{id}").to_return(:body=>result)
 
-    #stub_request(:get, "#{@client.protocol}#{@client.app_key}:#{@client.app_secret}@#{@client.service_url}/device/test_device").to_return(:body=>result.to_json)
+    @root_user.modify_application("test", :name=>"new name").to_s.should == result
 
-    #@client.get_device("test_device").should == result
+    WebMock.should have_requested(:put, "https://#{@root_key}:#{@root_secret}@appush.com/api/application/#{id}").once
+  end
 
-    #WebMock.should have_requested(:get, "#{@client.protocol}#{@client.app_key}:#{@client.app_secret}@#{@client.service_url}/device/test_device").once
-  #end
+  it "should list all applications" do
+    result = "[\"app1\", \"app2\"]"
 
-  #it "should register devices" do
-    #result = {"status"=>204}
+    stub_request(:get, "https://#{@root_key}:#{@root_secret}@appush.com/api/application").to_return(:body=>result)
 
-    #stub_request(:put, "#{@client.protocol}#{@client.app_key}:#{@client.app_secret}@#{@client.service_url}/device/test_device2").to_return(:body=>result.to_json, :status=>204)
+    @root_user.list_applications.to_s.should == result
 
-    #@client.register_device("test_device2").should == result
+    WebMock.should have_requested(:get, "https://#{@root_key}:#{@root_secret}@appush.com/api/application").once
+  end
 
-    #WebMock.should have_requested(:put, "#{@client.protocol}#{@client.app_key}:#{@client.app_secret}@#{@client.service_url}/device/test_device2").once
-  #end
+  it "should get an application" do
+    result = "{\"name\":\"My New Application\", \"application_token\": \"EVtmyITWMKzDRtawXxubVmfIYWU\", \"application_secret\": \"e52c6cbd232e2111671953d320ff80a2\", \"status\":\"dev\",\"dev_pem\":\"Bag Attributes\", \"active_devices\":0}\""
+    id = "test"
 
-  #it "should unregister devices" do
-    #result = {"status"=>204}
+    stub_request(:get, "https://#{@root_key}:#{@root_secret}@appush.com/api/application/#{id}").to_return(:body=>result)
 
-    #stub_request(:delete, "#{@client.protocol}#{@client.app_key}:#{@client.app_secret}@#{@client.service_url}/device/test_device").to_return(:body=>result.to_json, :status=>204)
+    @root_user.get_application(id).to_s.should == result
 
-    #@client.unregister_device("test_device").should == result
+    WebMock.should have_requested(:get, "https://#{@root_key}:#{@root_secret}@appush.com/api/application/#{id}").once
+  end
 
-    #WebMock.should have_requested(:delete, "#{@client.protocol}#{@client.app_key}:#{@client.app_secret}@#{@client.service_url}/device/test_device").once
-  #end
+  it "should get an application icon" do
+    result = File.read("#{File.dirname(__FILE__)}/no-icon.png")
+    id = "test"
 
-  #it "should get devices using a tag" do
-    #result = {"devices"=>["test_device"],"status"=>200}
+    stub_request(:get, "https://#{@root_key}:#{@root_secret}@appush.com/api/application/#{id}/icon").to_return(:body=>result)
 
-    #stub_request(:get, "#{@client.protocol}#{@client.app_key}:#{@client.push_secret}@#{@client.service_url}/tag/waa").to_return(:body=>result.to_json, :status=>200)
+    @root_user.get_application_icon(id).to_s.should == result
 
-    #@client.get_devices_by_tag("waa").should == result
+    WebMock.should have_requested(:get, "https://#{@root_key}:#{@root_secret}@appush.com/api/application/#{id}/icon").once
+  end
 
-    #WebMock.should have_requested(:get, "#{@client.protocol}#{@client.app_key}:#{@client.push_secret}@#{@client.service_url}/tag/waa").once
-  #end
+  it "should save an application icon" do
+    icon = File.read("#{File.dirname(__FILE__)}/no-icon.png")
+    id = "test"
 
-  #it "should send notifications" do
-    #result = {"status"=>201}
-    #tags = ["foo", "waa"]
-    #devices = ["test_device"]
-    #exclude = ["invalid_device"]
-    #alert = "hello"
-    #sound = "meow.aiff"
-    #badge = 1
-    #kv = {"spam"=>"foo"}
+    stub_request(:put, "https://#{@root_key}:#{@root_secret}@appush.com/api/application/#{id}/icon").with(:body=>icon, :headers=>{"Content-Type"=>"image/png"}).to_return(:body=>"")
 
-    #stub_request(:post, "#{@client.protocol}#{@client.app_key}:#{@client.push_secret}@#{@client.service_url}/notification").to_return(:status=>201, :body=>result.to_json)
+    @root_user.save_application_icon(id, icon).to_s.should == ""
 
-    #@client.send_notification(:tags=>tags, :devices=>devices, :exclude=>exclude, :alert=>alert, :sound=>sound, :badge=>badge, :kv=>kv).should == {"status"=>201}
+    WebMock.should have_requested(:put, "https://#{@root_key}:#{@root_secret}@appush.com/api/application/#{id}/icon").once
+  end
 
-    #WebMock.should have_requested(:post, "#{@client.protocol}#{@client.app_key}:#{@client.push_secret}@#{@client.service_url}/notification").once
-  #end
+  it "should delete an application" do
+    id = "test"
 
-  #it "should get notifications statuses" do
-    #result = {"devices"=>["test_device"], "completed"=>0, "payload"=>{"aps"=>{"badge"=>1, "sound"=>"meow.aiff", "alert"=>"Hello World"}, "spam"=>"eggs"}, "delivered"=>[], "tags"=>["foo", "bar", "baz"], "status"=>200}
+    stub_request(:delete, "https://#{@root_key}:#{@root_secret}@appush.com/api/application/#{id}").to_return(:body=>"")
 
-    #stub_request(:get, "#{@client.protocol}#{@client.app_key}:#{@client.push_secret}@#{@client.service_url}/notification/id_notify").to_return(:body=>result.to_json)
+    @root_user.delete_application(id).to_s.should == ""
 
-    #@client.get_notification_status("id_notify").should == result
+    WebMock.should have_requested(:delete, "https://#{@root_key}:#{@root_secret}@appush.com/api/application/#{id}").once
+  end
 
-    #WebMock.should have_requested(:get, "#{@client.protocol}#{@client.app_key}:#{@client.push_secret}@#{@client.service_url}/notification/id_notify").once
-  #end
+  it "should send a notification" do
+    id = "test"
+
+    params={:tags=>["one", "two", "three"],
+            :devices=>["lol", "waa"],
+            :exclude=>["do", "not", "exclude", "me"],
+            :alert=>"w00t!",
+            :sound=>"cat.ogg",
+            :badge=>1,
+            :kv=>{:go=>"crazy"}}
+
+    stub_request(:post, "https://#{@root_key}:#{@root_secret}@appush.com/api/application/#{id}/notification").with(:body=>"{\"devices\":[\"lol\",\"waa\"],\"payload\":{\"go\":\"crazy\",\"aps\":{\"badge\":1,\"sound\":\"cat.ogg\",\"alert\":\"w00t!\"}},\"exclude\":[\"do\",\"not\",\"exclude\",\"me\"],\"tags\":[\"one\",\"two\",\"three\"]}", :headers=>{"Content-Type"=>"application/json"}).to_return(:body=>"")
+
+    @root_user.send_notification(id, params).to_s.should == ""
+
+    WebMock.should have_requested(:post, "https://#{@root_key}:#{@root_secret}@appush.com/api/application/#{id}/notification").once
+  end
+
+  it "should get an notification status" do
+    app_id = "test_app"
+    notification_id = "test_notification"
+
+    stub_request(:get, "https://#{@root_key}:#{@root_secret}@appush.com/api/application/#{app_id}/notification/#{notification_id}").to_return(:body=>"")
+
+    @root_user.get_notification_status(app_id, notification_id).to_s.should == ""
+
+    WebMock.should have_requested(:get, "https://#{@root_key}:#{@root_secret}@appush.com/api/application/#{app_id}/notification/#{notification_id}").once
+  end
+
+  it "should get all devices by tag" do
+    app_id = "test"
+    tag = "waa"
+
+    stub_request(:get, "https://#{@root_key}:#{@root_secret}@appush.com/api/application/#{app_id}/tag/#{tag}").to_return(:body=>"")
+
+    @root_user.get_devices_by_tag(app_id, tag).to_s.should == ""
+
+    WebMock.should have_requested(:get, "https://#{@root_key}:#{@root_secret}@appush.com/api/application/#{app_id}/tag/#{tag}").once
+  end
+
+  it "should get a device information" do
+    dev_token = "test_dev"
+
+    stub_request(:get, "https://#{@profile_key}:#{@profile_secret}@appush.com/api/device/#{dev_token}").to_return(:body=>"")
+
+    @profile.get_device(dev_token).to_s.should == ""
+
+    WebMock.should have_requested(:get, "https://#{@profile_key}:#{@profile_secret}@appush.com/api/device/#{dev_token}").once
+  end
+
+  it "should register a device" do
+    dev_token = "test_dev"
+    tags = ["foo", "bar"]
+
+    stub_request(:put, "https://#{@profile_key}:#{@profile_secret}@appush.com/api/device/#{dev_token}").with(:body=>{:tags=>tags}.to_json, :headers=>{"Content-Type"=>"application/json"}).to_return(:body=>"")
+
+    @profile.register_device(dev_token, tags).to_s.should == ""
+
+    WebMock.should have_requested(:put, "https://#{@profile_key}:#{@profile_secret}@appush.com/api/device/#{dev_token}").once
+  end
+
+  it "should unregister a device" do
+    dev_token = "test_dev"
+
+    stub_request(:delete, "https://#{@profile_key}:#{@profile_secret}@appush.com/api/device/#{dev_token}").to_return(:body=>"")
+
+    @profile.unregister_device(dev_token).to_s.should == ""
+
+    WebMock.should have_requested(:delete, "https://#{@profile_key}:#{@profile_secret}@appush.com/api/device/#{dev_token}").once
+  end
+
+  it "should create a profile" do
+    result = "[\"x\", \"y\"]"
+
+    stub_request(:post, "https://#{@app_key}:#{@app_secret}@appush.com/api/profile").with(:headers=>{"Content-Type"=>"application/json"}).to_return(:body=>result)
+
+    @application.create_profile.to_s.should == result
+
+    WebMock.should have_requested(:post, "https://#{@app_key}:#{@app_secret}@appush.com/api/profile").once
+  end
 end
