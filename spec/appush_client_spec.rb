@@ -6,7 +6,7 @@ require 'webmock/rspec'
 require 'json'
 
 include WebMock
-include Appush
+include AppushClient
 
 describe "Using Appush client API" do
   before(:each) do

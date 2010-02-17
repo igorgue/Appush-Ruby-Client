@@ -3,7 +3,7 @@
 require 'json'
 require 'rest_client'
 
-module Appush
+module AppushClient
   class AppushClient
     attr_accessor :user, :password, :protocol, :service_url
 
