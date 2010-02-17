@@ -159,9 +159,20 @@ describe "Using Appush client API" do
     WebMock.should have_requested(:get, "https://#{@profile_key}:#{@profile_secret}@appush.com/api/device/#{dev_token}").once
   end
 
-  it "should register a device" do
+  it "should register a device with tags" do
     dev_token = "test_dev"
     tags = ["foo", "bar"]
+
+    stub_request(:put, "https://#{@profile_key}:#{@profile_secret}@appush.com/api/device/#{dev_token}").with(:body=>{:tags=>tags}.to_json, :headers=>{"Content-Type"=>"application/json"}).to_return(:body=>"")
+
+    @profile.register_device(dev_token, tags).to_s.should == ""
+
+    WebMock.should have_requested(:put, "https://#{@profile_key}:#{@profile_secret}@appush.com/api/device/#{dev_token}").once
+  end
+
+  it "should register a device without tags" do
+    dev_token = "test_dev"
+    tags = []
 
     stub_request(:put, "https://#{@profile_key}:#{@profile_secret}@appush.com/api/device/#{dev_token}").with(:body=>{:tags=>tags}.to_json, :headers=>{"Content-Type"=>"application/json"}).to_return(:body=>"")
 
