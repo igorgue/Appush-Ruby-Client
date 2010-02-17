@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = 'appush_client'
-  s.version = '0.2'
+  s.version = '0.3'
 
   s.authors = ['Igor Guerrero']
   s.date = '2010-01-09'
